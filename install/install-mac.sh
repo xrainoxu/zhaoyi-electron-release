@@ -100,7 +100,10 @@ info "目标版本：v${version}（架构 ${ARCH}）"
 dl_url="https://github.com/${RELEASE_REPO}/releases/download/v${version}/${asset}"
 zip_path="$TMP_DIR/$asset"
 info "正在下载：$dl_url"
-curl -fL $CURL_PROXY_OPT --retry 3 --connect-timeout 10 --max-time 600 \
+# --max-time 3600 (1h)：在弱网下 200MB zip 可能需要较长时间；
+# --speed-time 30 --speed-limit 1024：连续 30s 速度低于 1KB/s 视为失败重试。
+curl -fL $CURL_PROXY_OPT --retry 3 --connect-timeout 30 --max-time 3600 \
+  --speed-time 30 --speed-limit 1024 \
   "$dl_url" -o "$zip_path" || fail "应用下载失败。"
 
 # ---------- 4. SHA256 校验（可选） ----------

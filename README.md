@@ -12,10 +12,18 @@
 curl -fsSL https://raw.githubusercontent.com/xrainoxu/zhaoyi-electron-release/main/install/install-mac.sh | bash
 ```
 
+> 默认安装最新版本。具体版本号见 [Releases](https://github.com/xrainoxu/zhaoyi-electron-release/releases) 或 `latest.json`。
+
 ## 锁版本安装
 
 ```bash
-INSTALL_VERSION=v1.0.33 bash -c "$(curl -fsSL https://raw.githubusercontent.com/xrainoxu/zhaoyi-electron-release/main/install/install-mac.sh)"
+INSTALL_VERSION=v1.0.35 bash -c "$(curl -fsSL https://raw.githubusercontent.com/xrainoxu/zhaoyi-electron-release/main/install/install-mac.sh)"
+```
+
+## 用户级安装（无需 /Applications 写权限）
+
+```bash
+INSTALL_DIR="$HOME/Applications" bash <(curl -fsSL https://raw.githubusercontent.com/xrainoxu/zhaoyi-electron-release/main/install/install-mac.sh)
 ```
 
 ## 自定义下载源（CDN/镜像）
@@ -24,9 +32,11 @@ INSTALL_VERSION=v1.0.33 bash -c "$(curl -fsSL https://raw.githubusercontent.com/
 INSTALL_BASE_URL=https://your-cdn.example.com/releases bash <(curl -fsSL https://raw.githubusercontent.com/xrainoxu/zhaoyi-electron-release/main/install/install-mac.sh)
 ```
 
-## 历史版本
+## 公司代理透传
 
-见 [Releases](https://github.com/xrainoxu/zhaoyi-electron-release/releases)。
+```bash
+HTTPS_PROXY=http://proxy.corp.example.com:8080 bash <(curl -fsSL https://raw.githubusercontent.com/xrainoxu/zhaoyi-electron-release/main/install/install-mac.sh)
+```
 
 ## 安全说明
 

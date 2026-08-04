@@ -54,10 +54,12 @@ for c in curl unzip xattr open pgrep ditto; do
 done
 
 # ---------- 2. 代理透传 ----------
-CURL_PROXY=()
+# 用 CURL_PROXY_OPT 字符串（单 token），传 "" 表示无代理；
+# 避免数组在 set -u 下空展开触发"unbound variable"。
+CURL_PROXY_OPT=""
 if [[ -n "${HTTPS_PROXY:-${https_proxy:-}}" ]]; then
-  CURL_PROXY=(--proxy "${HTTPS_PROXY:-${https_proxy:-}}")
-  info "检测到代理：${CURL_PROXY[1]}"
+  CURL_PROXY_OPT="--proxy ${HTTPS_PROXY:-${https_proxy:-}}"
+  info "检测到代理：${HTTPS_PROXY:-${https_proxy:-}}"
 fi
 
 # ---------- 3. 解析版本与下载链接 ----------
@@ -68,7 +70,7 @@ sha256=""
 
 if [[ -z "$version" ]]; then
   # 通道 1：raw.githubusercontent.com 上的 latest.json（由 publish.sh 推到 main 分支）
-  if curl -fL "${CURL_PROXY[@]}" --connect-timeout 10 --max-time 30 \
+  if curl -fL $CURL_PROXY_OPT --connect-timeout 10 --max-time 30 \
        "https://raw.githubusercontent.com/${RELEASE_REPO}/${RELEASE_BRANCH}/latest.json" \
        -o "$TMP_DIR/latest.json" 2>/dev/null; then
     version="$(grep -oE '"version"[[:space:]]*:[[:space:]]*"v?[0-9]+\.[0-9]+\.[0-9]+"' \
@@ -81,7 +83,7 @@ if [[ -z "$version" ]]; then
   # 通道 2：兜底 GitHub Release API
   if [[ -z "$version" ]]; then
     warn "静态清单不可达，回退到 GitHub Release API。"
-    curl -fL "${CURL_PROXY[@]}" --retry 3 --connect-timeout 10 --max-time 60 \
+    curl -fL $CURL_PROXY_OPT --retry 3 --connect-timeout 10 --max-time 60 \
       -H 'Accept: application/vnd.github+json' \
       "https://api.github.com/repos/${RELEASE_REPO}/releases/latest" \
       -o "$TMP_DIR/release.json" || fail "无法访问 GitHub Release。请检查网络或联系管理员。"
@@ -98,7 +100,7 @@ info "目标版本：v${version}（架构 ${ARCH}）"
 dl_url="https://github.com/${RELEASE_REPO}/releases/download/v${version}/${asset}"
 zip_path="$TMP_DIR/$asset"
 info "正在下载：$dl_url"
-curl -fL "${CURL_PROXY[@]}" --retry 3 --connect-timeout 10 --max-time 600 \
+curl -fL $CURL_PROXY_OPT --retry 3 --connect-timeout 10 --max-time 600 \
   "$dl_url" -o "$zip_path" || fail "应用下载失败。"
 
 # ---------- 4. SHA256 校验（可选） ----------

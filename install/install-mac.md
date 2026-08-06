@@ -140,7 +140,7 @@ Node.js 运行环境将在应用首次启动时自动准备（约 30 秒）。
 安装中止：Release v1.0.xx 没有对应架构资产：temp-electron-darwin-x64-1.0.xx.zip
 ```
 
-发布端需要确保 `release.sh` / `publish.sh` 同时上传了 `arm64` 和 `x64` 两个资产。
+发布端需要确保 `publish.sh` 同时上传了 `arm64` 和 `x64` 两个资产（单架构构建时只会缺一条，install 脚本会回退到 GitHub API 自动探测）。
 
 ### 7.4 GitHub Release API 不可达
 
@@ -253,7 +253,8 @@ rm -rf ~/Library/Application\ Support/temp-electron
 - Node 自举服务：`src/services/node-bootstrap.ts`
 - Node 准备 UI：`src/components/NodeBootstrapPage.tsx`
 - App 阶段控制：`src/App.tsx`（`AppPhase` 三段式）
-- 双架构发布：`scripts/release.sh:7` `scripts/publish.sh:16`
+- 内测发布：`scripts/release.sh`（`pnpm release`，发到 private 仓库）
+- 正式发布：`scripts/publish.sh`（`pnpm publish`，发到 public 分发仓库 + 同步 install 脚本）
 - Node 扫描链：`src/services/openclaw.ts:findCompatibleNode()`（Method 0 优先 manifest）
 - 端口常量：`src/services/openclaw.ts:13`
 
@@ -261,9 +262,15 @@ rm -rf ~/Library/Application\ Support/temp-electron
 
 ## 12. 后续增强（计划中）
 
-- `INSTALL_RELEASE_BASE_URL` / `INSTALL_NODE_MIRROR` 环境变量支持内网镜像
-- 检测到旧版本时软提示与 `osascript` 退出旧 App
-- 支持 `~/Applications` 路径
-- Apple Developer ID 签名 + notarization
-- SHA256 校验发布 zip，Release notes 中附 checksum
+- `INSTALL_NODE_MIRROR` 环境变量支持内网 Node 镜像（应用首次启动时下载用）
+- Apple Developer ID 签名 + notarization（正式分发前的最后一步）
 - **测试包必须放在 macOS 信任路径（/Applications、~/Applications），不能放 /tmp，否则 TCC 拒绝启动**
+
+### 已完成（v1.0.35+）
+
+- ✅ `INSTALL_BASE_URL` 环境变量（等价原计划的 `INSTALL_RELEASE_BASE_URL`）
+- ✅ `INSTALL_VERSION` 锁版本
+- ✅ `INSTALL_DIR` 用户级安装（`~/Applications`）
+- ✅ `HTTPS_PROXY` 透传
+- ✅ 检测旧版本时用 `osascript` 优雅退出
+- ✅ SHA256 校验发布 zip（自动从 `latest.json` 读取）

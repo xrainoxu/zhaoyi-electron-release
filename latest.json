@@ -1,12 +1,12 @@
 {
-  "version": "v1.0.44",
-  "publishedAt": "2026-08-07T01:42:27Z",
+  "version": "v1.1.0",
+  "publishedAt": "2026-08-07T15:33:04Z",
   "minMacos": "11.0",
   "assets": {
-    "arm64": "temp-electron-darwin-arm64-1.0.44.zip"
+    "arm64": "temp-electron-darwin-arm64-1.1.0.zip"
   },
   "sha256": {
-    "arm64": "b735a7a686ef9f241afafa312394ee74769582e16ffd2212fabf982b1734239b"
+    "arm64": "a407064e871d473defdbf3b9efe6b319cfefb4ac1b665c78498fcc071f314cb0"
   },
   "downloadBase": "https://github.com/xrainoxu/zhaoyi-electron-release/releases/download"
 }
